@@ -1,14 +1,17 @@
-#include "../include/philo.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+
 
 void philo_think(int philo_number , int time_think  )
 {
-    printf("philo number : %d , is thinking ");
+    //printf("philo number : %d , is thinking ");
     usleep(time_think);    
 }
 
 void philo_sleep(int philo_number , int time_sleep)
 {
-    printf("philo number : %d , is sleeping");
+    //printf("philo number : %d , is sleeping");
     usleep(time_sleep);
 }
 
@@ -54,25 +57,22 @@ int main(int argc , char **argv , char **env)
    int **data ;
    int i ; 
    
-   if (argc < 5)
+   if (argc < 5 || argc > 6 )
    {
         perror("Number of arguments invalid");
         exit(EXIT_FAILURE);
     }
-
-    data = malloc(sizeof(int*)*4);
+    i = 1 ; 
+    data = malloc(sizeof(int*) * (argc - 1 ));
     
-    while (i < 4)
+    while (i < argc - 1 )
     {
         data[i] = malloc(sizeof(int)) ; 
-        data[i] = argv[i + 1] ; 
+        data[i][0] = atoi ( argv[i + 1] )  ; 
     }
-    i = 0 ; 
+    data[i] = malloc(sizeof(int)* atoi( argv[1] )  ) ;
 
-    while (i < 5)
-    {
-
-    }
+ 
 
 
 
