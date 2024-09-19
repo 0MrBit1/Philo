@@ -1,14 +1,20 @@
 #include "../include/philo.h"
 
-
 void philo_think(int philo_number , int time_think  )
 {
     printf("philo number : %d , is thinking ");
     usleep(time_think);    
 }
 
-void philo_eat(int philo_number , int *forks , int time_eat , int total_forks)
+void philo_sleep(int philo_number , int time_sleep)
 {
+    printf("philo number : %d , is sleeping");
+    usleep(time_sleep);
+}
+
+void philo_eat(int philo_number , int *forks , int time_eat , int total_forks  , int time_think , int time_sleep )
+{
+
     if (philo_number == 0)
     {
         forks[philo_number]  =   0 ;
@@ -26,26 +32,18 @@ void philo_eat(int philo_number , int *forks , int time_eat , int total_forks)
 
     }
     //take_two_forks ; 
-    usleep(time_eat) ; 
-    philo_think(int philo_number , int time_think  );
-    philo_sleep(int philo_number , int time_sleep);
-    
+    usleep(time_eat) ;
+    philo_think( philo_number ,  time_think  );
+    philo_sleep( philo_number , time_sleep);
+
 }
 
-void philo_sleep(int philo_number , int time_sleep)
-{
-    printf("philo number : %d , is sleeping");
-    usleep(time_sleep);
-}
-
-void Mr_philosopher(int philo_number , int **data )
+void Mr_philosopher(int philo_number , int *forks , int time_eat , int time_think ,int time_sleep , int total_forks )
 {
     int number_of_times_eaten ;
 
     number_of_times_eaten =  0 ; 
-    philo_eat(int philo_number , int *forks , int time_eat , int total_forks)
-    philo_think(int philo_number , int time_think  );
-    philo_sleep(int philo_number , int time_sleep);
+   philo_eat(philo_number , forks , time_eat ,  total_forks  ,  time_think ,  time_sleep ) ; 
 
 }
 
