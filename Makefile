@@ -1,32 +1,30 @@
-NAME	=	philo
-SRC		=	src
-INC		=	inc
-HEADER	=	philo.h
-CFILES	=	main.c \
-			init.c \
-			philo.c \
-			end.c \
-			utils.c
-SOURCES	=	$(addprefix $(SRC)/, $(CFILES))
-HFILES	=	$(addprefix $(INC)/, $(HEADER))
-FLAGS	= -fsanitize=threads -Wall -Wextra -Werror
-OBJECTS	= ${SOURCES:.c=.o}
+NAME    = philo
+SRC     = src
+INCLUDE = include
+HEADER  = $(INCLUDE)/philo.h
+CFILES  = $(SRC)/main.c \
+          $(SRC)/init.c \
+          $(SRC)/philo.c \
+          $(SRC)/end.c \
+          $(SRC)/utils.c
+OBJECTS = $(CFILES:.c=.o)
+FLAGS   = -fsanitize=thread -Wall -Wextra -Werror
 
-all: ${NAME}
+all: $(NAME)
 
-$(NAME): ${OBJECTS}
-	gcc -I ${INC} $(OBJECTS) -o $(NAME)
+$(NAME): $(OBJECTS)
+	gcc $(FLAGS) -I $(INCLUDE) $(OBJECTS) -o $(NAME)
 
-%.o: %.c ${HFILES}
-	gcc ${FLAGS} -I ${INC} -c $< -o $@
+$(SRC)/%.o: $(SRC)/%.c $(HEADER)
+	gcc $(FLAGS) -I $(INCLUDE) -c $< -o $@
 
 clean:
-	rm -f ${OBJECTS}
+	rm -f $(OBJECTS)
+
 fclean: clean
-	rm -f ${NAME}
+	rm -f $(NAME)
+
 re: fclean all
 
-norm:
-	norminette src/* inc/*
-
 .PHONY: all clean fclean re
+
