@@ -1,30 +1,48 @@
-NAME    = philo
-SRC     = src
-INCLUDE = include
-HEADER  = $(INCLUDE)/philo.h
-CFILES  = $(SRC)/main.c \
-          $(SRC)/init.c \
-          $(SRC)/philo.c \
-          $(SRC)/end.c \
-          $(SRC)/utils.c
-OBJECTS = $(CFILES:.c=.o)
-FLAGS   = -fsanitize=thread -Wall -Wextra -Werror
 
-all: $(NAME)
+# Compiler
+NAME			= philo
+CC				= cc
+CFLAGS			= -Wall -Wextra -Werror -fsanitize=leak
+MKDIR			= mkdir -p
+RM				= rm -rf
+LINKER  	    = -lpthread
 
-$(NAME): $(OBJECTS)
-	gcc $(FLAGS) -I $(INCLUDE) $(OBJECTS) -o $(NAME)
+# Includes
+INCLUDES_DIR 	= includes
+INCLUDES_FLAG 	= -I$(INCLUDES_DIR)
+INCLUDES		= $(wildcard $(INCLUDES_DIR)/*.h)
 
-$(SRC)/%.o: $(SRC)/%.c $(HEADER)
-	gcc $(FLAGS) -I $(INCLUDE) -c $< -o $@
+# Sources
+SRCS_DIR		= srcs/
+SRC_FILES		= main.c \
+				  init.c \
+				  utils.c \
+				  str_utils.c \
+				  simulation.c \
 
-clean:
-	rm -f $(OBJECTS)
+# Objects
+OBJS_DIR		= objs/
+OBJ_FILES		= $(SRC_FILES:.c=.o)
+OBJS			= $(addprefix $(OBJS_DIR), $(OBJ_FILES))
 
-fclean: clean
-	rm -f $(NAME)
+
+all : $(OBJS_DIR) $(NAME)
+
+$(OBJS_DIR) :
+	@$(MKDIR) $(OBJS_DIR)
+
+$(NAME) : $(OBJS) Makefile
+	@$(CC) $(CFLAGS) $(OBJS) $(LINKER) -o $(NAME)
+
+$(OBJS_DIR)%.o : $(SRCS_DIR)%.c $(INCLUDES)
+	@$(CC) $(CFLAGS) $(INCLUDES_FLAG) -c $< -o $@	
+
+clean :
+	@$(RM) $(OBJS_DIR)
+
+fclean : clean
+	@$(RM) $(NAME)
 
 re: fclean all
 
 .PHONY: all clean fclean re
-
