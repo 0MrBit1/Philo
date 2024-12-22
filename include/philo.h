@@ -6,19 +6,15 @@
 /*   By: acharik <acharik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/22 00:18:27 by acharik           #+#    #+#             */
-/*   Updated: 2024/12/22 00:18:30 by acharik          ###   ########.fr       */
+/*   Updated: 2024/12/22 18:24:34 by acharik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
-# include <stdbool.h>
 # include <pthread.h>
-
-# define RESET    "\033[0m"
-# define RED      "\033[31m"    /* Red */
-# define GREEN    "\033[32m"    /* Green */
+#include <stdio.h>
 
 # define PHILO_MAX_COUNT 200
 
@@ -34,32 +30,32 @@ typedef struct s_mutexes
 	t_mutex	*meal_lock;
 }	t_mutexes;
 
-typedef struct s_times
+typedef struct s_chrono
 {
 	size_t	die;
 	size_t	eat;
 	size_t	sleep;
 	size_t	last_meal;
 	size_t	born_time;
-}	t_times;
+}	t_chrono;
 
-typedef struct s_philo
+typedef struct s_philo_stats
 {
 	int			id;
-	t_times		times;
+	t_chrono	times;
 	t_mutexes	mutexes;
 	int			must_eat;
 	t_id		thread_id;
 	int			meals_eaten;
 	int			philo_count;
-}	t_philo;
+}	t_philo_stats;
 
-typedef struct s_engine
+typedef struct s_synchronization
 {
 	t_mutex	*forks;
-	t_philo	*philos;
+	t_philo_stats	*philos;
 	t_mutex	meal_lock;
 	t_mutex	write_lock;
-}	t_engine;
+}	t_synchronization;
 
-#endif   /* PHILO_H */
+#endif   

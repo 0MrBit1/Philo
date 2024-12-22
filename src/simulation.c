@@ -6,13 +6,13 @@
 /*   By: acharik <acharik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/22 00:17:57 by acharik           #+#    #+#             */
-/*   Updated: 2024/12/22 00:18:00 by acharik          ###   ########.fr       */
+/*   Updated: 2024/12/22 21:40:37 by acharik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "../include/philo_utils.h"
 
-bool	is_all_eat(t_philo *philos)
+short	all_fat(t_philo_stats *philos)
 {
 	int		finished;
 	int		i;
@@ -20,7 +20,7 @@ bool	is_all_eat(t_philo *philos)
 	i = -1;
 	finished = 0;
 	if (philos[0].must_eat == -1)
-		return (false);
+		return (0);
 	while (++i < philos[0].philo_count)
 	{
 		pthread_mutex_lock(philos->mutexes.meal_lock);
@@ -31,18 +31,18 @@ bool	is_all_eat(t_philo *philos)
 	if (finished == philos[0].philo_count)
 	{
 		pthread_mutex_lock(philos->mutexes.write_lock);
-		return (true);
+		return (1);
 	}
-	return (false);
+	return (0);
 }
 
-void	*obsorver(void *ptr)
+void	*monitor_thread(void *ptr)
 {
-	t_philo	*philos;
+	t_philo_stats	*philos;
 	int		i;
 
-	philos = (t_philo *)ptr;
-	while (true)
+	philos = (t_philo_stats *)ptr;
+	while (1)
 	{
 		i = -1;
 		while (++i < philos[0].philo_count)
@@ -52,73 +52,69 @@ void	*obsorver(void *ptr)
 				> philos[i].times.die)
 			{
 				pthread_mutex_unlock(philos->mutexes.meal_lock);
-				print_action(&philos[i], RED" died"RESET);
+				print_action(&philos[i], "state=died");
 				pthread_mutex_lock(philos->mutexes.write_lock);
 				return (NULL);
 			}
 			pthread_mutex_unlock(philos->mutexes.meal_lock);
 		}
-		if (is_all_eat(philos))
+		if (all_fat(philos))
 			return (NULL);
 	}
 	return (NULL);
 }
 
-void	philo_routine(t_philo *philo)
+void	philo_actions(t_philo_stats *philo)
 {
 	pthread_mutex_lock(philo->mutexes.left_fork);
-	print_action(philo, " has taken a fork");
+	print_action(philo, " state=has taken a fork");
 	pthread_mutex_lock(philo->mutexes.right_fork);
-	print_action(philo, " has taken a fork");
+	print_action(philo, " state=has taken a fork");
 	pthread_mutex_lock(philo->mutexes.meal_lock);
-	print_action(philo, " is eating");
+	print_action(philo, " state=is eating");
 	philo->times.last_meal = get_current_time();
 	philo->meals_eaten += 1;
 	pthread_mutex_unlock(philo->mutexes.meal_lock);
 	ft_usleep(philo->times.eat);
 	pthread_mutex_unlock(philo->mutexes.left_fork);
 	pthread_mutex_unlock(philo->mutexes.right_fork);
-	print_action(philo, " is sleeping");
+	print_action(philo, " state=is sleeping");
 	ft_usleep(philo->times.sleep);
-	print_action(philo, " is thinking");
+	print_action(philo, " state=is thinking");
 }
 
-void	*start_simulation(void *ptr)
+void	*start_threads(void *ptr)
 {
-	t_philo	*philo;
+	t_philo_stats	*philo;
 
-	philo = (t_philo *)ptr;
+	philo = (t_philo_stats *)ptr;
 	if (philo->id % 2 == 0)
 		ft_usleep(1);
 	pthread_mutex_lock(philo->mutexes.meal_lock);
 	philo->times.born_time = get_current_time();
 	philo->times.last_meal = get_current_time();
 	pthread_mutex_unlock(philo->mutexes.meal_lock);
-	while (true)
-		philo_routine(philo);
+	while (1)
+		philo_actions(philo);
 	return (NULL);
 }
 
-void	launcher(t_engine *engine, int count)
+void	start_simulation(t_synchronization *synchro, int count)
 {
-	t_id	obsorver_id;
+	t_id	monitor_id;
 	int		i;
 
 	i = -1;
-	if (pthread_create(&obsorver_id, NULL, &obsorver, engine->philos) != 0)
-		destroy_all(engine, "[Thread Creation ERROR]\n", count, 1);
+	pthread_create(&monitor_id, NULL, &monitor_thread, synchro->philos);
+	
 	while (++i < count)
 	{
-		if (pthread_create(&engine->philos[i].thread_id, NULL,
-				start_simulation, &engine->philos[i]) != 0)
-			destroy_all(engine, "[Thread Creation ERROR]\n", count, 1);
+		pthread_create(&synchro->philos[i].thread_id, NULL,
+				start_threads, &synchro->philos[i]);
+			
 	}
 	i = -1;
-	if (pthread_join(obsorver_id, NULL) != 0)
-		destroy_all(engine, "[Thread Join ERROR]\n", count, 1);
+ 	pthread_join(monitor_id, NULL);
 	while (++i < count)
-	{
-		if (pthread_detach(engine->philos[i].thread_id) != 0)
-			destroy_all(engine, "[Thread Detach ERROR]\n", count, 1);
-	}
+		pthread_detach(synchro->philos[i].thread_id) ;
 }

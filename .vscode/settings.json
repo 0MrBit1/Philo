@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "init.h": "c",
+        "simulation.h": "c",
+        "philo_utils.h": "c"
+    }
+}

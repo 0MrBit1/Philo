@@ -1,24 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   simulation.h                                       :+:      :+:    :+:   */
+/*   philo_utils.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: acharik <acharik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/22 00:18:21 by acharik           #+#    #+#             */
-/*   Updated: 2024/12/22 00:18:23 by acharik          ###   ########.fr       */
+/*   Created: 2024/12/22 00:18:15 by acharik           #+#    #+#             */
+/*   Updated: 2024/12/22 21:33:58 by acharik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SIMULATION_H
-# define SIMULATION_H
+#ifndef PHILO_UTILS_H
+# define PHILO_UTILS_H
 
 # include "philo.h"
 
-bool	is_all_eat(t_philo *philos);
-void	*obsorver(void *ptr);
-void	philo_routine(t_philo *philo);
-void	*start_simulation(void *ptr);
-void	launcher(t_engine *engine, int count);
+void	error_message(char *text, int signal);
+void	destroy_all(t_synchronization *engine,int count);
+void	print_action(t_philo_stats *philo, char *action);
+size_t	get_current_time(void);
+void	ft_usleep(size_t mls);
+size_t	ft_strlen(const char *str);
+long	ft_atoi(const char *str);
 
-#endif   /* SIMULATION_H */
+#endif

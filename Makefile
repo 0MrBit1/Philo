@@ -1,47 +1,45 @@
+# Makefile for Philo Project
 
-# Compiler
-NAME			= philo
-CC				= cc
-CFLAGS			= -Wall -Wextra -Werror -fsanitize=leak
-MKDIR			= mkdir -p
-RM				= rm -rf
-LINKER  	    = -lpthread
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Wextra  -lpthread -g3 -fsanitize=thread
 
-# Includes
-INCLUDES_DIR 	= includes
-INCLUDES_FLAG 	= -I$(INCLUDES_DIR)
-INCLUDES		= $(wildcard $(INCLUDES_DIR)/*.h)
+# Directories
+SRC_DIR = /home/acharik/Desktop/Philo/src
+BIN_DIR = /home/acharik/Desktop/Philo/bin
 
-# Sources
-SRCS_DIR		= srcs/
-SRC_FILES		= main.c \
-				  init.c \
-				  utils.c \
-				  str_utils.c \
-				  simulation.c \
+# Files
+SRCS = $(SRC_DIR)/init.c $(SRC_DIR)/main.c $(SRC_DIR)/philo_utils.c $(SRC_DIR)/simulation.c $(SRC_DIR)/string_utils.c
+OBJS = $(SRC_DIR)/init.o $(SRC_DIR)/main.o $(SRC_DIR)/philo_utils.o $(SRC_DIR)/simulation.o $(SRC_DIR)/string_utils.o
+TARGET = $(BIN_DIR)/philo
 
-# Objects
-OBJS_DIR		= objs/
-OBJ_FILES		= $(SRC_FILES:.c=.o)
-OBJS			= $(addprefix $(OBJS_DIR), $(OBJ_FILES))
+# Rules
+all: $(TARGET)
 
+$(TARGET): $(OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
 
-all : $(OBJS_DIR) $(NAME)
+$(SRC_DIR)/init.o: $(SRC_DIR)/init.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/init.c -o $(SRC_DIR)/init.o
 
-$(OBJS_DIR) :
-	@$(MKDIR) $(OBJS_DIR)
+$(SRC_DIR)/main.o: $(SRC_DIR)/main.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/main.c -o $(SRC_DIR)/main.o
 
-$(NAME) : $(OBJS) Makefile
-	@$(CC) $(CFLAGS) $(OBJS) $(LINKER) -o $(NAME)
+$(SRC_DIR)/philo_utils.o: $(SRC_DIR)/philo_utils.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/philo_utils.c -o $(SRC_DIR)/philo_utils.o
 
-$(OBJS_DIR)%.o : $(SRCS_DIR)%.c $(INCLUDES)
-	@$(CC) $(CFLAGS) $(INCLUDES_FLAG) -c $< -o $@	
+$(SRC_DIR)/simulation.o: $(SRC_DIR)/simulation.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/simulation.c -o $(SRC_DIR)/simulation.o
 
-clean :
-	@$(RM) $(OBJS_DIR)
+$(SRC_DIR)/string_utils.o: $(SRC_DIR)/string_utils.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/string_utils.c -o $(SRC_DIR)/string_utils.o
 
-fclean : clean
-	@$(RM) $(NAME)
+clean:
+	rm -f $(SRC_DIR)/*.o
+
+fclean: clean
+	rm -rf $(TARGET)
 
 re: fclean all
 

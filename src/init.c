@@ -6,13 +6,13 @@
 /*   By: acharik <acharik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/22 00:18:07 by acharik           #+#    #+#             */
-/*   Updated: 2024/12/22 00:18:09 by acharik          ###   ########.fr       */
+/*   Updated: 2024/12/22 21:23:31 by acharik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "../include/philo_utils.h"
 
-void	init_philos(t_engine *en, t_philo *philos, t_mutex *forks, char **argv)
+void	init_philos(t_synchronization *synchro, t_philo_stats *philos, t_mutex *forks, char **argv)
 {
 	int	i;
 
@@ -35,28 +35,28 @@ void	init_philos(t_engine *en, t_philo *philos, t_mutex *forks, char **argv)
 			philos[i].mutexes.right_fork = &forks[philos[i].philo_count - 1];
 		else
 			philos[i].mutexes.right_fork = &forks[i - 1];
-		philos[i].mutexes.write_lock = &en->write_lock;
-		philos[i].mutexes.meal_lock = &en->meal_lock;
+		philos[i].mutexes.write_lock = &synchro->write_lock;
+		philos[i].mutexes.meal_lock = &synchro->meal_lock;
 	}
 }
 
-void	init_forks(t_engine *engine, t_mutex *forks, int count)
+void	init_forks(t_synchronization *synchro, t_mutex *forks, int number)
 {
 	int	i;
 
 	i = -1;
-	while (++i < count)
+	while (++i < number)
 	{
 		if (pthread_mutex_init(&forks[i], NULL) != 0)
-			destroy_all(engine, "[Mutex Init ERROR]\n", i, 1);
+			destroy_all(synchro, i);
 	}
 }
 
-void	init_engine(t_engine *engine, t_philo *philos, t_mutex *forks)
+void	init_synchro(t_synchronization *synchro, t_philo_stats *philos, t_mutex *forks)
 {
-	engine->forks = forks;
-	engine->philos = philos;
-	if (pthread_mutex_init(&engine->write_lock, NULL) != 0
-		|| pthread_mutex_init(&engine->meal_lock, NULL) != 0)
-		destroy_all(engine, "[Mutex Init ERROR]\n", -1, 1);
+	synchro->forks = forks;
+	synchro->philos = philos;
+	if (pthread_mutex_init(&synchro->write_lock, NULL) != 0
+		|| pthread_mutex_init(&synchro->meal_lock, NULL) != 0)
+		destroy_all(synchro, -1);
 }

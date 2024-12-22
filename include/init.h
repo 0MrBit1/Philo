@@ -1,26 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   init.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: acharik <acharik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/22 00:18:15 by acharik           #+#    #+#             */
-/*   Updated: 2024/12/22 00:18:17 by acharik          ###   ########.fr       */
+/*   Created: 2024/12/22 00:18:38 by acharik           #+#    #+#             */
+/*   Updated: 2024/12/22 20:20:44 by acharik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_H
-# define UTILS_H
+#ifndef INIT_H
+# define INIT_H
 
-# include "philo.h"
+# include "philo_utils.h"
 
-void	error_message(char *text, int signal);
-void	destroy_all(t_engine *engine, char *str, int count, int signal);
-void	print_action(t_philo *philo, char *action);
-size_t	get_current_time(void);
-void	ft_usleep(size_t mls);
-size_t	ft_strlen(const char *str);
-long	ft_atoi(const char *str);
+void	init_philos(t_synchronization *synchro, t_philo_stats *philos, t_mutex *forks, char **argv);
+void	init_forks(t_synchronization *synchro, t_mutex *forks, int count);
+void	init_synchro(t_synchronization *sychro, t_philo_stats *philos, t_mutex *forks);
 
-#endif   /* UTILS_H */
+#endif   

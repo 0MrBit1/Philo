@@ -1,0 +1,1 @@
+./philo 3 180 60 60 : data race and others error
